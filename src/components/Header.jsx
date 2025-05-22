@@ -6,7 +6,7 @@ const Header = () => {
         isActive ? 'text-blue-600 underline underline-offset-10 decoration-2 underline-offset-2 font-semibold' : 'font-semibold text-black hover:text-blue-600 hover:underline underline-blue-600 decoration-2 underline-offset-10';
 
     return (
-        <nav className='flex items-center justify-between px-5 bg-white shadow-lg z-20 py-4'>
+        <nav className='flex items-center justify-between sticky top-0 z-50 px-5 bg-white shadow-lg py-4'>
             <div className='font-bold text-2xl text-gray-700'>MagicFrames</div>
             <div className='flex items-center gap-14'>
                 <div className='flex space-x-5'>
