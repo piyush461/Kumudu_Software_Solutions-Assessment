@@ -1,179 +1,27 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { LuMoveDiagonal } from "react-icons/lu";
+import '../styles/animations.css';
+import '../styles/fonts.css';
 
 const CreateFrame = () => {
     // Active aside button state
     const [activeTab, setActiveTab] = useState('Dimensions');
 
     const frames = [
-        { id: 1, name: 'Wooden Frame', img: 'assets/frame1.png' },
-        { id: 2, name: 'Metal Frame', img: 'assets/frame2.png' },
-        { id: 3, name: 'Golden Frame', img: 'assets/frame3.png' },
-        { id: 4, name: 'Arc Frame', img: 'assets/frame4.png' },
-        { id: 5, name: 'Aluminuim Frame', img: 'assets/frame5.png' },
-        { id: 6, name: 'Textured Frame', img: 'assets/frame6.png' },
+        { id: 1, name: 'Wooden Frame', img: '/assets/frame1.png' },
+        { id: 2, name: 'Metal Frame', img: '/assets/frame2.png' },
+        { id: 3, name: 'Golden Frame', img: '/assets/frame3.png' },
+        { id: 4, name: 'Arc Frame', img: '/assets/frame4.png' },
+        { id: 5, name: 'Aluminuim Frame', img: '/assets/frame5.png' },
+        { id: 6, name: 'Textured Frame', img: '/assets/frame6.png' },
     ];
 
-
-    // Default dimensions in inches
-    const [frameHeightInches, setFrameHeightInches] = useState(20);
-    const [frameWidthInches, setFrameWidthInches] = useState(10);
-
-    // Convert inches to pixels
-    const inchToPx = (inch) => inch * 96;
-
-    const frameHeight = inchToPx(frameHeightInches);
-    const frameWidth = inchToPx(frameWidthInches);
-    const [numberOfGods, setNumberOfGods] = useState(1);
-    const [numberOfGodsInput, setNumberOfGodsInput] = useState(1);
-    const [isEditingGods, setIsEditingGods] = useState(false);
-    const [godHeight, setGodHeight] = useState(inchToPx(10)); // default 10 inches
-    const [godWidth, setGodWidth] = useState(inchToPx(6));   // default 6 inches
-    const lampWidth = inchToPx(2);  // default 2 inches (192px)
-
-
-    const [frameWidthDisplay, setFrameWidthDisplay] = useState(10);
-    const [frameHeightDisplay, setFrameHeightDisplay] = useState(20);
-
-    // Temporary input values while editing
-    const [frameWidthInput, setFrameWidthInput] = useState(frameWidthDisplay);
-    const [frameHeightInput, setFrameHeightInput] = useState(frameHeightDisplay);
-
-    // Edit mode flag
-    const [isEditing, setIsEditing] = useState(false);
-    const [isEditingFrame, setIsEditingFrame] = useState(false);
-
-    // Selected frame from carousel or dropdown
-    const [selectedFrame, setSelectedFrame] = useState(null);
-    const [selectedFrameInput, setSelectedFrameInput] = useState(null);
-
-    // Selected gods from carousel
-    const [selectedGods, setSelectedGods] = useState([]);
-    const [selectedGodsInput, setSelectedGodsInput] = useState([]);
-
-    // God dimensions state
-    const [godHeightInput, setGodHeightInput] = useState(10);
-    const [godWidthInput, setGodWidthInput] = useState(6);
-    const [isEditingGodDimensions, setIsEditingGodDimensions] = useState(false);
-    const [godDimensionError, setGodDimensionError] = useState('');
-
-    // State for tracking gods to be removed
-    const [godsToRemove, setGodsToRemove] = useState([]);
-
-    // Function to get count of a specific god in the frame
-    const getGodCount = (godId) => {
-        return selectedGods.filter(god => god.id === godId).length;
-    };
-
-    // Function to add a god to the next empty slot
-    const addGodToFrame = (god) => {
-        if (selectedGods.length < numberOfGods) {
-            setSelectedGods([...selectedGods, god]);
-        }
-    };
-
-    // Function to remove a god from a specific position
-    const removeGodFromFrame = (index) => {
-        const newSelectedGods = [...selectedGods];
-        newSelectedGods.splice(index, 1);
-        setSelectedGods(newSelectedGods);
-    };
-
-    // Handle edit button click
-    const handleEditClick = () => {
-        setIsEditing(true);
-    };
-
-    // Handle save button click
-    const handleSaveClick = () => {
-        // Update displayed values only on save
-        setFrameWidthInches(frameWidthInput);
-        setFrameHeightInches(frameHeightInput);
-        setNumberOfGods(numberOfGodsInput);
-        setIsEditing(false);
-    };
-
-    // Handle edit button click for frame
-    const handleEditFrameClick = () => {
-        setIsEditingFrame(true);
-    };
-
-    // Handle save button click for frame
-    const handleSaveFrameClick = () => {
-        setSelectedFrame(selectedFrameInput);
-        setIsEditingFrame(false);
-    };
-
-    // Handle edit button click for gods
-    const handleEditGodsClick = () => {
-        setIsEditingGods(true);
-    };
-
-    // Handle save button click for gods
-    const handleSaveGodsClick = () => {
-        setSelectedGods(selectedGodsInput);
-        setIsEditingGods(false);
-    };
-
-    // Calculate available space for gods
-    const calculateAvailableSpace = () => {
-        const frameInnerWidth = frameWidth * 0.9; // 90% of frame width
-        const frameInnerHeight = frameHeight * 0.92; // 92% of frame height
-        const padding = 40; // 20px padding on each side
-        const gap = 40; // 20px gap between gods
-
-        const availableWidth = (frameInnerWidth - (gap * (numberOfGods - 1))) / numberOfGods;
-        const availableHeight = frameInnerHeight;
-
-        return {
-            width: availableWidth,
-            height: availableHeight
-        };
-    };
-
-    // Handle god dimensions save
-    const handleSaveGodDimensions = () => {
-        const availableSpace = calculateAvailableSpace();
-        const godHeightPx = inchToPx(godHeightInput);
-        const godWidthPx = inchToPx(godWidthInput);
-
-        if (godHeightPx > availableSpace.height || godWidthPx > availableSpace.width) {
-            setGodDimensionError(`God dimensions exceed available space. Maximum size: ${Math.floor(availableSpace.width / 96)}" x ${Math.floor(availableSpace.height / 96)}"`);
-            return;
-        }
-
-        setGodHeight(godHeightPx);
-        setGodWidth(godWidthPx);
-        setGodDimensionError('');
-        setIsEditingGodDimensions(false);
-    };
-
-    // Function to toggle god removal
-    const toggleGodRemoval = (index) => {
-        if (godsToRemove.includes(index)) {
-            setGodsToRemove(godsToRemove.filter(i => i !== index));
-        } else {
-            setGodsToRemove([...godsToRemove, index]);
-        }
-    };
-
-    // Function to confirm god removal
-    const confirmGodRemoval = () => {
-        const newSelectedGods = selectedGods.filter((_, index) => !godsToRemove.includes(index));
-        setSelectedGods(newSelectedGods);
-        setGodsToRemove([]);
-    };
-
-    // Function to remove the latest instance of a specific god
-    const removeLatestGodInstance = (godId) => {
-        const lastIndex = [...selectedGods].reverse().findIndex(god => god.id === godId);
-        if (lastIndex !== -1) {
-            const actualIndex = selectedGods.length - 1 - lastIndex;
-            const newSelectedGods = [...selectedGods];
-            newSelectedGods.splice(actualIndex, 1);
-            setSelectedGods(newSelectedGods);
-        }
-    };
+    const gods = [
+        { id: 1, name: 'Laxmi', img: '/assets/GOD1.jpeg' },
+        { id: 2, name: 'Ganesha', img: '/assets/GOD2.jpeg' },
+        { id: 3, name: 'Krishna', img: '/assets/GOD3.jpeg' },
+        { id: 4, name: 'Saraswati', img: '/assets/GOD4.jpeg' },
+    ];
 
     const asideButtons = [
         { title: 'Dimensions', head: 'Frame Dimensions', icon: LuMoveDiagonal },
@@ -182,18 +30,46 @@ const CreateFrame = () => {
         { title: 'Accessories', head: 'Select Accessories', icon: LuMoveDiagonal },
     ];
 
-    const gods = [
-        { id: 1, name: 'Laxmi', img: 'assets/GOD1.jpeg' },
-        { id: 2, name: 'Ganesha', img: 'assets/GOD2.jpeg' },
-        { id: 3, name: 'Krishna', img: 'assets/GOD3.jpeg' },
-        { id: 4, name: 'Saraswati', img: 'assets/GOD4.jpeg' },
-    ];
+    // Convert inches to pixels using standard 96 PPI (CSS standard)
+    // Note: This is a CSS standard where 1 inch = 96 pixels
+    // This ensures consistent sizing across different displays
+    const inchToPx = (inch) => inch * 96;
+    const pxToInch = (px) => px / 96;
 
-    // Initialize selectedGods with first god after gods array is defined
-    useEffect(() => {
-        setSelectedGods([gods[0]]);
-        setSelectedGodsInput([gods[0]]);
-    }, []);
+    // Frame dimensions state
+    const [frameHeightInches, setFrameHeightInches] = useState(20);
+    const [frameWidthInches, setFrameWidthInches] = useState(10);
+    const [frameWidthInput, setFrameWidthInput] = useState(frameWidthInches);
+    const [frameHeightInput, setFrameHeightInput] = useState(frameHeightInches);
+    const frameHeight = inchToPx(frameHeightInches);
+    const frameWidth = inchToPx(frameWidthInches);
+    
+    // God dimensions state - 6" × 10" default size
+    const defaultGodWidth = inchToPx(6);  // 6 inches = 576px (6 * 96)
+    const defaultGodHeight = inchToPx(10); // 10 inches = 960px (10 * 96)
+    const [godWidth, setGodWidth] = useState(defaultGodWidth);
+    const [godHeight, setGodHeight] = useState(defaultGodHeight);
+    const [godWidthInput, setGodWidthInput] = useState(6);  // in inches
+    const [godHeightInput, setGodHeightInput] = useState(10); // in inches
+    const [isEditingGodDimensions, setIsEditingGodDimensions] = useState(false);
+    const [godDimensionError, setGodDimensionError] = useState('');
+
+    // Image loading states
+    const [imageLoadingStates, setImageLoadingStates] = useState({});
+    const [imageErrorStates, setImageErrorStates] = useState({});
+
+    // Gods state
+    const [numberOfGods, setNumberOfGods] = useState(1);
+    const [numberOfGodsInput, setNumberOfGodsInput] = useState(1);
+    const [selectedGods, setSelectedGods] = useState([]);
+    const [godsToRemove, setGodsToRemove] = useState([]);
+    const [godsCountError, setGodsCountError] = useState('');
+
+    // Frame editing state
+    const [isEditingFrame, setIsEditingFrame] = useState(false);
+    const [selectedFrameInput, setSelectedFrameInput] = useState(null);
+    const [isEditingFrameDimensions, setIsEditingFrameDimensions] = useState(false);
+    const [isEditingGodCount, setIsEditingGodCount] = useState(false);
 
     // Carousel scroll index
     const containerRef = useRef(null);
@@ -210,6 +86,241 @@ const CreateFrame = () => {
     const godsScrollNeeded = gods.length > visibleGodsCount;
     const maxGodsIndex = godsScrollNeeded ? gods.length - visibleGodsCount : 0;
 
+    // Calculate available space for gods
+    const calculateAvailableSpace = () => {
+        const frameInnerWidth = frameWidth * 0.9; // 90% of frame width for padding
+        const frameInnerHeight = frameHeight * 0.9; // 90% of frame height for padding
+        const gap = 20; // Gap between gods in pixels
+
+        // Calculate maximum width available for each god
+        const availableWidth = (frameInnerWidth - (gap * (numberOfGods - 1))) / numberOfGods;
+
+        return {
+            width: availableWidth,
+            height: frameInnerHeight,
+            gap
+        };
+    };
+
+    // Initialize god dimensions on component mount - this sets the FIRST god to 6" × 10"
+    useEffect(() => {
+        setGodWidth(defaultGodWidth);  // 6 inches
+        setGodHeight(defaultGodHeight); // 10 inches
+        setGodWidthInput(6);
+        setGodHeightInput(10);
+    }, []); // Empty dependency array means this runs once on mount
+
+    // Update god dimensions when number of gods changes - this affects ADDITIONAL gods
+    useEffect(() => {
+        if (numberOfGods > 1) {  // Only adjust if there's more than one god
+            const availableSpace = calculateAvailableSpace();
+            setGodWidth(availableSpace.width);
+            setGodWidthInput(Math.round(pxToInch(availableSpace.width)));
+        }
+    }, [numberOfGods, frameWidth]);
+
+    // Function to add a god to the frame
+    const addGodToFrame = (god) => {
+        try {
+            if (selectedGods.length < numberOfGods) {
+                const isFirstGod = selectedGods.length === 0;
+                
+                // Add the god
+                setSelectedGods(prev => [...prev, god]);
+                
+                // Set dimensions based on whether it's the first god or not
+                if (isFirstGod) {
+                    console.log('Adding first god with default dimensions');
+                    setGodWidth(defaultGodWidth);
+                    setGodWidthInput(6);
+                } else {
+                    console.log('Adding additional god with calculated dimensions');
+                    const availableSpace = calculateAvailableSpace();
+                    setGodWidth(availableSpace.width);
+                    setGodWidthInput(Math.round(pxToInch(availableSpace.width)));
+                }
+            }
+        } catch (error) {
+            console.error('Error adding god:', error);
+        }
+    };
+
+    // Function to remove a god from a specific slot
+    const removeGodFromSlot = (index) => {
+        try {
+            const newSelectedGods = selectedGods.filter((_, i) => i !== index);
+            setSelectedGods(newSelectedGods);
+
+            // Reset dimensions based on remaining gods
+            if (newSelectedGods.length === 1) {
+                console.log('Resetting to default dimensions');
+                setGodWidth(defaultGodWidth);
+                setGodWidthInput(6);
+            } else if (newSelectedGods.length > 1) {
+                console.log('Recalculating dimensions for remaining gods');
+                const availableSpace = calculateAvailableSpace();
+                setGodWidth(availableSpace.width);
+                setGodWidthInput(Math.round(pxToInch(availableSpace.width)));
+            }
+        } catch (error) {
+            console.error('Error removing god:', error);
+        }
+    };
+
+    // Function to confirm god removal
+    const confirmGodRemoval = () => {
+        const newSelectedGods = selectedGods.filter((_, index) => !godsToRemove.includes(index));
+        setSelectedGods(newSelectedGods);
+        setGodsToRemove([]);
+    };
+
+    // Handle aside button click
+    const handleTabClick = (title) => {
+        setActiveTab(title);
+    };
+
+    // Handle save button click for frame dimensions
+    const handleSaveFrameDimensions = () => {
+        // Update frame dimensions
+        setFrameWidthInches(frameWidthInput);
+        setFrameHeightInches(frameHeightInput);
+        setIsEditingFrameDimensions(false);
+
+        // Recalculate god dimensions based on new frame size
+        const availableSpace = calculateAvailableSpace();
+        
+        if (selectedGods.length > 1) {
+            // For multiple gods, adjust width based on available space
+            setGodWidth(availableSpace.width);
+            setGodWidthInput(Math.floor(pxToInch(availableSpace.width)));
+        } else {
+            // For single god, maintain default width
+            setGodWidth(defaultGodWidth);
+            setGodWidthInput(6);
+        }
+
+        // Always adjust height based on frame height
+        setGodHeight(availableSpace.height);
+        setGodHeightInput(Math.floor(pxToInch(availableSpace.height)));
+    };
+
+    // Handle save button click for number of gods
+    const handleSaveNumberOfGods = () => {
+        const availableSpace = calculateAvailableSpace();
+        const minGodWidth = inchToPx(4); // Minimum 4 inches width per god
+        const availableWidthInInches = Math.floor(pxToInch(availableSpace.width));
+        
+        if (availableSpace.width < minGodWidth) {
+            setGodsCountError(
+                `Not enough space for ${numberOfGodsInput} gods. ` +
+                `Each god would get ${availableWidthInInches}" width, but needs minimum 4" width. ` +
+                `Please either increase frame width or reduce number of gods.`
+            );
+            return;
+        }
+
+        // Clear any previous error
+        setGodsCountError('');
+        
+        // Update number of gods
+        setNumberOfGods(numberOfGodsInput);
+        setIsEditingGodCount(false);
+
+        // Adjust selected gods array if reducing number of gods
+        if (numberOfGodsInput < selectedGods.length) {
+            setSelectedGods(selectedGods.slice(0, numberOfGodsInput));
+        }
+
+        // Reset to default dimensions if only one god
+        if (numberOfGodsInput === 1) {
+            setGodWidth(defaultGodWidth);
+            setGodWidthInput(6);
+        } else {
+            // Update width for multiple gods
+            setGodWidth(availableSpace.width);
+            setGodWidthInput(Math.floor(pxToInch(availableSpace.width)));
+        }
+
+        // Always adjust height based on frame height
+        setGodHeight(availableSpace.height);
+        setGodHeightInput(Math.floor(pxToInch(availableSpace.height)));
+    };
+
+    // Handle edit button click for frame
+    const handleEditFrameClick = () => {
+        setIsEditingFrame(true);
+    };
+
+    // Handle save button click for frame
+    const handleSaveFrameClick = () => {
+        setSelectedFrameInput(selectedFrameInput);
+        setIsEditingFrame(false);
+    };
+
+    // Function to get count of a specific god in the frame
+    const getGodCount = (godId) => {
+        return selectedGods.filter(god => god.id === godId).length;
+    };
+
+    // Handle god dimensions save
+    const handleSaveGodDimensions = () => {
+        const availableSpace = calculateAvailableSpace();
+        const newGodWidthPx = inchToPx(godWidthInput);
+        const newGodHeightPx = inchToPx(godHeightInput);
+
+        // Check if new dimensions exceed available space
+        if (newGodHeightPx !== defaultGodHeight) {
+            setGodDimensionError(`Height must be exactly 10 inches`);
+            return;
+        }
+
+        if (newGodWidthPx > availableSpace.width) {
+            setGodDimensionError(`Width cannot exceed ${Math.floor(pxToInch(availableSpace.width))} inches`);
+            return;
+        }
+
+        // Clear any previous error
+        setGodDimensionError('');
+        
+        // Update dimensions independently
+        setGodWidth(newGodWidthPx);
+        setGodHeight(defaultGodHeight); // Always maintain 10" height
+        setIsEditingGodDimensions(false);
+    };
+
+    // Handle image load error
+    const handleImageError = (godId) => {
+        setImageErrorStates(prev => ({
+            ...prev,
+            [godId]: true
+        }));
+        setImageLoadingStates(prev => ({
+            ...prev,
+            [godId]: false
+        }));
+    };
+
+    // Handle image load start
+    const handleImageLoadStart = (godId) => {
+        setImageLoadingStates(prev => ({
+            ...prev,
+            [godId]: true
+        }));
+        setImageErrorStates(prev => ({
+            ...prev,
+            [godId]: false
+        }));
+    };
+
+    // Handle image load success
+    const handleImageLoadSuccess = (godId) => {
+        setImageLoadingStates(prev => ({
+            ...prev,
+            [godId]: false
+        }));
+    };
+
+    // Update visible counts on resize
     useEffect(() => {
         const updateVisibleCount = () => {
             if (containerRef.current) {
@@ -229,6 +340,7 @@ const CreateFrame = () => {
         return () => window.removeEventListener('resize', updateVisibleCount);
     }, []);
 
+    // Reset carousel indices when needed
     useEffect(() => {
         if (!scrollNeeded && carouselIndex !== 0) {
             setCarouselIndex(0);
@@ -238,37 +350,11 @@ const CreateFrame = () => {
         }
     }, [scrollNeeded, carouselIndex, godsScrollNeeded, godsCarouselIndex]);
 
-    // Handle aside button click
-    const handleTabClick = (title) => {
-        setActiveTab(title);
-    };
-
     return (
-        <div className='bg-gray-200 h-auto w-full overflow-auto'>
+        <div className='bg-gray-200 h-auto w-full overflow-auto font-[var(--font-primary)]'>
             <div className="flex-1 flex justify-between">
                 {/* Aside Navigation */}
                 <aside className="fixed top-24 left-0 h-screen w-28 z-50 group">
-                    <style>
-                        {`
-                            @keyframes slideOut {
-                                0% { 
-                                    transform: translateX(0);
-                                    opacity: 1;
-                                }
-                                    70% { 
-                                    transform: translateX(20px);
-                                    opacity: 0;
-                                }
-                                100% { 
-                                    transform: translateX(24px);
-                                    opacity: 0;
-                                }
-                            }
-                            .slide-animation {
-                                animation: slideOut 2s infinite;
-                            }
-                        `}
-                    </style>
                     <div className='absolute left-0 top-28 w-8 h-28 rounded-r-xl bg-black animate-pulse flex items-center justify-center slide-animation'>
                         <div className="w-0 h-0 border-t-[6px] border-t-transparent border-l-[8px] border-l-white border-b-[6px] border-b-transparent"></div>
                     </div>
@@ -298,110 +384,213 @@ const CreateFrame = () => {
                     <div className='flex-1 p-7'>
                         {asideButtons.map((btn) => activeTab == btn.title ? (<h1 key={btn.title} className="font-bold ml-28 text-2xl my-3 text-gray-600">{btn.head}</h1>) : '')}
                         <div className="p-2" style={{ height: `${frameHeight}px`, width: `${frameWidth}px` }}>
-                            <div
-                                className={`DropArea relative ${selectedFrame ? '' : 'bg-gray-800'} w-full h-full flex items-center justify-center p-10`}
-                            >
-                                <div
-                                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex item center justify-around gap-10 shrink-0 h-[92%] w-[90%] bg-gray-800 z-30 p-10"
+                            <div className={`DropArea relative ${selectedFrameInput ? '' : 'bg-gray-800'} w-full h-full flex items-center justify-center p-10`}>
+                                <div 
+                                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-around gap-5 h-[90%] w-[90%] bg-gray-800 z-30"
+                                    style={{ transition: 'height 0.3s, width 0.3s' }}
                                 >
                                     {Array.from({ length: numberOfGods }).map((_, i) => (
                                         <div
                                             key={i}
-                                            className="bg-white shrink-0 flex-1 flex-nowrap outline h-full w-full relative flex items-center justify-center"
-                                            style={{
-                                                maxWidth: `${calculateAvailableSpace().width}px`,
-                                                maxHeight: `${calculateAvailableSpace().height}px`
-                                            }}
+                                            className="flex items-center justify-center h-full"
+                                            style={{ transition: 'width 0.3s' }}
                                         >
-                                            {selectedGods[i] && (
+                                            {selectedGods[i] ? (
+                                                <div className="relative h-full">
                                                 <img
                                                     src={selectedGods[i].img}
                                                     alt={selectedGods[i].name}
-                                                    className="object-contain"
+                                                        style={{
+                                                            width: `${godWidth}px`,
+                                                            height: `${godHeight}px`,
+                                                            objectFit: 'fill',
+                                                            transition: 'width 0.3s, height 0.3s'
+                                                        }}
+                                                        onError={() => handleImageError(selectedGods[i].id)}
+                                                        onLoadStart={() => handleImageLoadStart(selectedGods[i].id)}
+                                                        onLoad={() => handleImageLoadSuccess(selectedGods[i].id)}
+                                                    />
+                                                    <div 
+                                                        className="absolute top-2 right-2 w-8 h-8 bg-red-500 rounded-full flex items-center justify-center cursor-pointer hover:bg-red-600 transition-colors duration-200"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            removeGodFromSlot(i);
+                                                        }}
+                                                    >
+                                                        <svg 
+                                                            xmlns="http://www.w3.org/2000/svg" 
+                                                            className="h-5 w-5 text-white" 
+                                                            viewBox="0 0 20 20" 
+                                                            fill="currentColor"
+                                                        >
+                                                            <path 
+                                                                fillRule="evenodd" 
+                                                                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" 
+                                                                clipRule="evenodd" 
+                                                            />
+                                                        </svg>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <div 
+                                                    className="flex flex-col items-center justify-center text-center bg-white h-full"
                                                     style={{
-                                                        maxWidth: `${godWidth}px`,
-                                                        maxHeight: `${godHeight}px`
+                                                        width: `${godWidth}px`,
+                                                        height: `${godHeight}px`,
+                                                        transition: 'width 0.3s, height 0.3s'
                                                     }}
-                                                />
+                                                >
+                                                    <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center">
+                                                        <svg 
+                                                            xmlns="http://www.w3.org/2000/svg" 
+                                                            className="h-8 w-8 text-gray-400" 
+                                                            fill="none" 
+                                                            viewBox="0 0 24 24" 
+                                                            stroke="currentColor"
+                                                        >
+                                                            <path 
+                                                                strokeLinecap="round" 
+                                                                strokeLinejoin="round" 
+                                                                strokeWidth={2} 
+                                                                d="M12 4v16m8-8H4" 
+                                                            />
+                                                        </svg>
+                                                    </div>
+                                                    <p className="text-sm text-gray-400 font-medium mt-2">Drop God Image Here</p>
+                                                    <p className="text-xs text-gray-500 mt-1">or click to select</p>
+                                                </div>
                                             )}
                                         </div>
                                     ))}
                                 </div>
-                                <div className="Frame absolute inset-0 z-10" >
-                                    <img className='h-full w-full object-fill' src={selectedFrame?.img} alt="" />
+                                <div className="Frame absolute inset-0 z-10">
+                                    <img className='h-full w-full object-fill' src={selectedFrameInput?.img} alt="" />
                                 </div>
                             </div>
-
                         </div>
                     </div>
                 </div>
                 {/* Right Panel */}
                 <div className="max-w-72 w-72 p-3 flex flex-col fixed top-24 z-50 right-10">
-                    {/* Frame Dimensions - Always Visible */}
-                    <div className="flex w-full justify-between gap-2 items-center p-2 mb-3 rounded-lg shadow-md bg-white">
-                        <div className="flex-1 rounded-lg p-1 px-2 bg-gray-100">
+                    <div className="flex flex-col gap-2">
+                        <div className="frameGodInputContainer flex flex-col bg-white rounded-lg shadow-md p-4">
+                            <div className="flex flex-col gap-4">
+                                {/* Frame Dimensions Input */}
+                                <div className="w-full">
+                                    <div className="rounded-lg p-3 bg-gray-100">
+                                        <div className="flex justify-between items-center">
+                                            <div>
                             <p className="text-xs font-semibold text-gray-500">Frame</p>
                             <div className="flex items-center text-xs text-gray-700 font-bold">
                                 <input
                                     type="number"
-                                    className="w-6 p-1"
+                                                        className={`w-12 p-1 rounded transition-all duration-200 ${isEditingFrameDimensions ? 'border border-gray-300 focus:outline-none focus:border-indigo-500' : 'border-none bg-transparent'}`}
                                     value={frameWidthInput}
                                     onChange={(e) => setFrameWidthInput(e.target.value)}
-                                    readOnly={!isEditing}
+                                                        readOnly={!isEditingFrameDimensions}
+                                                        min="1"
                                 />
-                                <span className="flex items-center mx-1">x</span>
+                                                    <span className="flex items-center mx-1">×</span>
                                 <input
                                     type="number"
-                                    className="w-6 p-1"
+                                                        className={`w-12 p-1 rounded transition-all duration-200 ${isEditingFrameDimensions ? 'border border-gray-300 focus:outline-none focus:border-indigo-500' : 'border-none bg-transparent'}`}
                                     value={frameHeightInput}
                                     onChange={(e) => setFrameHeightInput(e.target.value)}
-                                    readOnly={!isEditing}
-                                />
-                                <span className="flex items-center ml-1">Inches</span>
+                                                        readOnly={!isEditingFrameDimensions}
+                                                        min="1"
+                                                    />
+                                                    <span className="flex items-center ml-1">in</span>
+                                                </div>
+                                            </div>
+                                            {!isEditingFrameDimensions && !isEditingGodCount && !isEditingFrame && (
+                                                <button
+                                                    className="cursor-pointer bg-gray-100 p-2 rounded-full hover:bg-gray-200 active:bg-gray-300"
+                                                    onClick={() => setIsEditingFrameDimensions(true)}
+                                                    aria-label="Edit Frame Dimensions"
+                                                >
+                                                    ✏️
+                                                </button>
+                                            )}
+                                            {isEditingFrameDimensions && (
+                                                <button
+                                                    className="cursor-pointer bg-gray-100 p-2 rounded-full hover:bg-gray-200 active:bg-gray-300"
+                                                    onClick={handleSaveFrameDimensions}
+                                                    aria-label="Save Frame Dimensions"
+                                                >
+                                                    ✔️
+                                                </button>
+                                            )}
+                                        </div>
                             </div>
                         </div>
 
-                        <div className="flex-1 rounded-md p-1 px-2 bg-gray-100">
+                                {/* Number of Gods Input */}
+                                <div className="w-full">
+                                    <div className="rounded-lg p-3 bg-gray-100">
+                                        <div className="flex justify-between items-center">
+                                            <div>
                             <p className="text-xs text-nowrap font-semibold text-gray-500">No. of Gods</p>
+                                                <div className="flex items-center">
                             <input
                                 type="number"
                                 value={numberOfGodsInput}
-                                onChange={(e) => setNumberOfGodsInput(parseInt(e.target.value))}
-                                readOnly={!isEditing}
-                                className="text-sm px-2 text-gray-700 max-w-8 font-bold"
+                                                        onChange={(e) => {
+                                                            const value = parseInt(e.target.value);
+                                                            if (value > 0) {
+                                                                setNumberOfGodsInput(value);
+                                                                setGodsCountError('');
+                                                            }
+                                                        }}
+                                                        readOnly={!isEditingGodCount}
+                                                        min="1"
+                                                        className={`w-12 p-1 rounded text-sm text-gray-700 font-bold transition-all duration-200 ${
+                                                            isEditingGodCount ? 'border border-gray-300 focus:outline-none focus:border-indigo-500' : 'border-none bg-transparent'
+                                                        } ${godsCountError ? 'border-red-500' : ''}`}
                             />
                         </div>
-
-                        {!isEditing && !isEditingFrame && (
+                                            </div>
+                                            {!isEditingFrameDimensions && !isEditingGodCount && !isEditingFrame && (
                             <button
-                                className="cursor-pointer hover:drop-shadow-md hover:drop-shadow-amber-300"
-                                onClick={handleEditClick}
-                                aria-label="Edit Frame Dimensions"
+                                                    className="cursor-pointer bg-gray-100 p-2 rounded-full hover:bg-gray-200 active:bg-gray-300"
+                                                    onClick={() => setIsEditingGodCount(true)}
+                                                    aria-label="Edit Number of Gods"
                             >
                                 ✏️
                             </button>
                         )}
-
-                        {isEditing && (
+                                            {isEditingGodCount && (
                             <button
-                                className="cursor-pointer hover:drop-shadow-md hover:drop-shadow-amber-300"
-                                onClick={handleSaveClick}
-                                aria-label="Save Frame Dimensions"
+                                                    className="cursor-pointer bg-gray-100 p-2 rounded-full hover:bg-gray-200 active:bg-gray-300"
+                                                    onClick={handleSaveNumberOfGods}
+                                                    aria-label="Save Number of Gods"
                             >
                                 ✔️
                             </button>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Error Message */}
+                            {godsCountError && (
+                                <div className="mt-2">
+                                    <p className="text-xs text-red-500">
+                                        {godsCountError}
+                                    </p>
+                                </div>
                         )}
                     </div>
 
                     {/* Frame Type - Only visible when Frame tab is active or frame is selected */}
-                    {(activeTab === 'Frame' || selectedFrame) && (
+                        {(activeTab === 'Frame' || selectedFrameInput) && (
                         <div className="flex w-full justify-between gap-2 items-center p-2 mb-3 rounded-lg shadow-md bg-white">
                             <div className="flex-1 rounded-lg p-1 px-2 bg-gray-100">
                                 <p className="text-xs font-semibold text-gray-500">Frame Type</p>
                                 <div className="flex items-center text-xs text-gray-700 font-bold">
                                     <select
                                         id="frameSelect"
-                                        className="w-full p-1"
+                                            className={`w-full p-1 rounded text-sm transition-all duration-200 ${isEditingFrame ? 'border border-gray-300 focus:outline-none focus:border-indigo-500' : 'border-none bg-transparent'}`}
                                         value={selectedFrameInput?.id || ''}
                                         onChange={(e) => {
                                             const frameId = parseInt(e.target.value, 10);
@@ -423,7 +612,7 @@ const CreateFrame = () => {
                             </div>
                             {!isEditing && !isEditingFrame && (
                                 <button
-                                    className="cursor-pointer hover:drop-shadow-md hover:drop-shadow-amber-300"
+                                        className="cursor-pointer bg-gray-100 p-2 rounded-full hover:bg-gray-200 active:bg-gray-300"
                                     onClick={handleEditFrameClick}
                                     aria-label="Edit Frame Type"
                                 >
@@ -432,7 +621,7 @@ const CreateFrame = () => {
                             )}
                             {isEditingFrame && (
                                 <button
-                                    className="cursor-pointer hover:drop-shadow-md hover:drop-shadow-amber-300"
+                                        className="cursor-pointer bg-gray-100 p-2 rounded-full hover:bg-gray-200 active:bg-gray-300"
                                     onClick={handleSaveFrameClick}
                                     aria-label="Save Frame Type"
                                 >
@@ -444,34 +633,44 @@ const CreateFrame = () => {
 
                     {/* God Dimensions - Only visible when Gods tab is active */}
                     {activeTab === 'Gods' && (
-                        <div className="flex w-full justify-between gap-2 items-center p-2 mb-3 rounded-lg shadow-md bg-white">
+                            <div className="flex flex-col bg-white rounded-lg shadow-md">
+                                <div className="flex w-full justify-between gap-2 items-center p-2">
                             <div className="flex-1 rounded-lg p-1 px-2 bg-gray-100">
                                 <p className="text-xs font-semibold text-gray-500">God Dimensions</p>
                                 <div className="flex items-center text-xs text-gray-700 font-bold">
                                     <input
                                         type="number"
-                                        className="w-6 p-1"
+                                                className={`w-12 p-1 rounded transition-all duration-200 ${isEditingGodDimensions ? 'border border-gray-300 focus:outline-none focus:border-indigo-500' : 'border-none bg-transparent'}`}
                                         value={godWidthInput}
-                                        onChange={(e) => setGodWidthInput(parseInt(e.target.value))}
+                                                onChange={(e) => {
+                                                    const value = parseInt(e.target.value);
+                                                    if (value > 0) {
+                                                        setGodWidthInput(value);
+                                                    }
+                                                }}
                                         readOnly={!isEditingGodDimensions}
+                                                min="1"
                                     />
-                                    <span className="flex items-center mx-1">x</span>
+                                            <span className="flex items-center mx-1">×</span>
                                     <input
                                         type="number"
-                                        className="w-6 p-1"
+                                                className={`w-12 p-1 rounded transition-all duration-200 ${isEditingGodDimensions ? 'border border-gray-300 focus:outline-none focus:border-indigo-500' : 'border-none bg-transparent'}`}
                                         value={godHeightInput}
-                                        onChange={(e) => setGodHeightInput(parseInt(e.target.value))}
+                                                onChange={(e) => {
+                                                    const value = parseInt(e.target.value);
+                                                    if (value > 0) {
+                                                        setGodHeightInput(value);
+                                                    }
+                                                }}
                                         readOnly={!isEditingGodDimensions}
+                                                min="1"
                                     />
-                                    <span className="flex items-center ml-1">Inches</span>
+                                            <span className="flex items-center ml-1">in</span>
                                 </div>
-                                {godDimensionError && (
-                                    <p className="text-xs text-red-500 mt-1">{godDimensionError}</p>
-                                )}
                             </div>
                             {!isEditingGodDimensions && (
                                 <button
-                                    className="cursor-pointer hover:drop-shadow-md hover:drop-shadow-amber-300"
+                                            className="cursor-pointer bg-gray-100 p-2 rounded-full hover:bg-gray-200 active:bg-gray-300"
                                     onClick={() => setIsEditingGodDimensions(true)}
                                     aria-label="Edit God Dimensions"
                                 >
@@ -480,15 +679,24 @@ const CreateFrame = () => {
                             )}
                             {isEditingGodDimensions && (
                                 <button
-                                    className="cursor-pointer hover:drop-shadow-md hover:drop-shadow-amber-300"
+                                            className="cursor-pointer bg-gray-100 p-2 rounded-full hover:bg-gray-200 active:bg-gray-300"
                                     onClick={handleSaveGodDimensions}
                                     aria-label="Save God Dimensions"
                                 >
                                     ✔️
                                 </button>
+                                    )}
+                                </div>
+                                {godDimensionError && (
+                                    <div className="px-2 pb-2">
+                                        <p className="text-xs text-red-500 mt-1">
+                                            {godDimensionError}
+                                        </p>
+                                    </div>
                             )}
                         </div>
                     )}
+                    </div>
                 </div>
             </div>
             {/* Frame carousel: only visible when 'Frame' tab active */}
@@ -529,11 +737,10 @@ const CreateFrame = () => {
                                 <div
                                     key={frame.id}
                                     onClick={() => {
-                                        setSelectedFrame(frame);
                                         setSelectedFrameInput(frame);
                                     }}
                                     className={`cursor-pointer relative h-44 w-44 flex justify-center items-center mx-4 rounded 
-                                ${selectedFrame?.id === frame.id ? 'border-indigo-600 border-3' : 'hover:border-3 hover:border-indigo-600'}`}
+                                ${selectedFrameInput?.id === frame.id ? 'border-indigo-600 border-3' : 'hover:border-3 hover:border-indigo-600'}`}
                                 >
                                     <img
                                         src={frame.img}
@@ -541,7 +748,7 @@ const CreateFrame = () => {
                                         className='w-40 h-40'
                                     />
                                     <div className='absolute text-sm font-semibold'>{frame.name}</div>
-                                    <div className={`absolute -top-3.5 -right-3.5 h-9 w-9 flex justify-center items-center rounded-full bg-indigo-600 ${selectedFrame?.id === frame.id ? '' : 'opacity-0 '}`}>
+                                    <div className={`absolute -top-3.5 -right-3.5 h-9 w-9 flex justify-center items-center rounded-full bg-indigo-600 ${selectedFrameInput?.id === frame.id ? '' : 'opacity-0 '}`}>
                                         <img className='h-8' src="assets/tick.png" alt="" />
                                     </div>
                                 </div>
@@ -606,7 +813,7 @@ const CreateFrame = () => {
                                             <button
                                                 onClick={(e) => {
                                                     e.stopPropagation();
-                                                    removeLatestGodInstance(god.id);
+                                                    removeGodFromSlot(gods.findIndex(g => g.id === god.id));
                                                 }}
                                                 className="absolute -top-3.5 -left-3.5 h-9 w-9 flex justify-center items-center rounded-full bg-red-500 hover:bg-red-600 transition-colors duration-200"
                                             >
