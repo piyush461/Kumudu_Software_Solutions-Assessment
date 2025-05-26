@@ -10,13 +10,42 @@ const CreateFrame = () => {
     // Active aside button state
     const [activeTab, setActiveTab] = useState('Dimensions');
 
+    // Add tooltip states
+    const [showTooltip, setShowTooltip] = useState(false);
+    const [tooltipMessage, setTooltipMessage] = useState('');
+    const tooltipTimeoutRef = useRef(null);
+
+    // Function to show tooltip
+    const showTooltipMessage = (message) => {
+        setTooltipMessage(message);
+        setShowTooltip(true);
+        
+        // Clear any existing timeout
+        if (tooltipTimeoutRef.current) {
+            clearTimeout(tooltipTimeoutRef.current);
+        }
+        
+        // Hide tooltip after 3 seconds
+        tooltipTimeoutRef.current = setTimeout(() => {
+            setShowTooltip(false);
+        }, 3000);
+    };
+
+    // Cleanup timeout on unmount
+    useEffect(() => {
+        return () => {
+            if (tooltipTimeoutRef.current) {
+                clearTimeout(tooltipTimeoutRef.current);
+            }
+        };
+    }, []);
+
     const frames = [
         { id: 1, name: 'Wooden Frame', img: '/assets/frame1.png' },
         { id: 2, name: 'Metal Frame', img: '/assets/frame2.png' },
         { id: 3, name: 'Golden Frame', img: '/assets/frame3.png' },
-        { id: 4, name: 'Arc Frame', img: '/assets/frame4.png' },
-        { id: 5, name: 'Aluminuim Frame', img: '/assets/frame5.png' },
-        { id: 6, name: 'Textured Frame', img: '/assets/frame6.png' },
+        { id: 4, name: 'Aluminium Frame', img: '/assets/frame5.png' },
+        { id: 5, name: 'Textured Frame', img: '/assets/frame6.png' },
     ];
 
     const gods = [
@@ -260,9 +289,14 @@ const CreateFrame = () => {
         setGodsToRemove([]);
     };
 
-    // Handle aside button click
+    // Handle aside button click with tooltip
     const handleTabClick = (title) => {
         setActiveTab(title);
+        if (title === 'Gods') {
+            showTooltipMessage('Scroll down to view and select gods');
+        } else if (title === 'Accessories') {
+            showTooltipMessage('Scroll down to view and select accessories');
+        }
     };
 
     // Handle save button click for frame dimensions
@@ -463,13 +497,20 @@ const CreateFrame = () => {
 
     return (
         <div className='bg-gray-200 h-auto w-full overflow-auto font-[var(--font-primary)]'>
+            {/* Tooltip */}
+            {showTooltip && (
+                <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-[60] bg-black text-white px-6 py-3 rounded-lg shadow-lg text-sm animate-fade-in">
+                    {tooltipMessage}
+                </div>
+            )}
+
             <div className="flex-1 flex justify-between">
                 {/* Aside Navigation */}
                 <aside className="fixed top-24 left-0 h-screen w-28 z-50 group">
                     <div className='absolute left-0 top-28 w-8 h-28 rounded-r-xl bg-black animate-pulse flex items-center justify-center slide-animation'>
                         <div className="w-0 h-0 border-t-[6px] border-t-transparent border-l-[8px] border-l-white border-b-[6px] border-b-transparent"></div>
                     </div>
-                    <div className='flex flex-col items-center gap-6 bg-white py-5 px-5 transform -translate-x-[150%] group-hover:translate-x-0 transition-transform duration-300 rounded-r-xl overflow-hidden bg-blue-300'>
+                    <div className='flex flex-col items-center gap-6 bg-white py-5 px-5 transform -translate-x-[150%] group-hover:translate-x-0 transition-transform duration-300 rounded-r-xl overflow-hidden bg-blue-300 shadow-lg'>
                         {asideButtons.map((btn) => (
                             <div key={btn.title} className="flex items-center flex-col">
                                 <button
